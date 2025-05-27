@@ -70,7 +70,11 @@ source venv/bin/activate
 
 ```bash
 # Create requirements.txt file with dependencies
-echo "spotipy==2.23.0" > requirements.txt
+cat > requirements.txt << EOL
+spotipy==2.23.0
+python-dotenv==1.0.0
+openai>=1.6.1
+EOL
 
 # Install dependencies from requirements.txt
 pip install -r requirements.txt
@@ -87,14 +91,22 @@ spotify/
 ├── .spotify_token_cache  # Cached authentication token
 ├── README.md             # This documentation file
 ├── auth.py               # Authentication module
-├── play.py               # Player module to play tracks
-└── search.py             # Search module to find songs
+├── spotify_assistant.py  # Natural language Spotify assistant
+├── function_schemas.py   # Tool definitions for OpenAI
+└── tools/                # Folder with modular functions for the assistant
+    ├── __init__.py       # Make tools importable
+    ├── search_songs.py   # Search functionality
+    ├── get_top_songs.py  # Get user's top tracks
+    ├── play_song.py      # Play functionality
+    └── player_controls.py # Additional controls (pause, skip, etc.)
 ```
 
 ## Technology Stack
 
 - Python 3
-- spotipy (Spotify API Python client)
+- spotipy==2.23.0 (Spotify API Python client)
+- openai>=1.6.1 (OpenAI API for natural language processing)
+- python-dotenv==1.0.0 (Environment variable management)
 - Virtual Environment (venv)
 
 ### 4. Spotify API Authentication Setup
@@ -106,6 +118,7 @@ cat > .env << EOL
 SPOTIPY_CLIENT_ID=your_client_id_here
 SPOTIPY_CLIENT_SECRET=your_client_secret_here
 SPOTIPY_REDIRECT_URI=https://example.org/callback
+OPENAI_API_KEY=your_openai_api_key_here
 EOL
 ```
 
@@ -125,19 +138,40 @@ To get your Spotify API credentials:
 ### 5. Running the Application
 
 ```bash
-# Execute the authentication script
-python auth.py
-
-# Play your top track on an active Spotify device (or browser as fallback)
-python play.py
-
-# Search for songs (returns information including song IDs)
-python search.py "your search query" [limit]
-
-# Play a specific song by ID or URI
-python play.py 4iV5W9uYEdYUVa79Axb7Rh  # Spotify track ID
-python play.py spotify:track:4iV5W9uYEdYUVa79Axb7Rh  # Spotify track URI
+# Run the natural language Spotify assistant
+python spotify_assistant.py
 ```
+
+With the assistant, you can perform operations like:
+
+- "Search for songs by The Beatles"
+- "Play my top songs from the last 6 months"
+- "Play the song Bohemian Rhapsody"
+- "Pause the music" or "Skip to the next track"
+
+## Natural Language Spotify Assistant
+
+The core of this project is the natural language assistant that allows you to interact with Spotify using conversational language. The assistant:
+
+- Uses OpenAI's function calling to parse user requests into Spotify API calls
+- Supports multi-step interactions through recursive tool calls
+- Provides a user-friendly interface for all Spotify operations
+- Maintains conversation context for improved user experience
+
+### Available Features
+
+1. **Search for Songs**: Find songs by title, artist, album, or genre
+2. **Get Top Songs**: View your most played tracks over different time periods
+3. **Play Songs**: Start playback of specific songs or from search results
+4. **Playback Control**: Pause, resume, skip tracks, and manage playback
+
+### Technical Implementation
+
+The assistant uses a modular architecture:
+
+- `function_schemas.py` defines the available tools for OpenAI
+- `tools/` directory contains modular implementation of each Spotify API feature
+- `spotify_assistant.py` handles the conversation flow and OpenAI integration
 
 #### Authentication Process
 
@@ -175,3 +209,7 @@ After successful authentication, a token cache file will be created. Subsequent 
 - May 27, 2025: Created Python virtual environment and project structure
 - May 27, 2025: Implemented Spotify OAuth authentication using environment variables
 - May 27, 2025: Added song search functionality and playback by song ID
+- May 27, 2025: Created natural language assistant with OpenAI integration
+- May 27, 2025: Refactored code into modular components in the tools/ directory
+- May 27, 2025: Improved the OpenAI client integration and fixed recursive tool calls
+- May 27, 2025: Streamlined project structure by removing redundant standalone scripts

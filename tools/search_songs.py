@@ -1,7 +1,5 @@
-import sys
 from auth import get_token
 import spotipy
-import json
 
 
 def search_songs(query, limit=5):
@@ -15,9 +13,6 @@ def search_songs(query, limit=5):
     Returns:
         list: List of songs with their details
     """
-    print(f"Searching for: {query}")
-    print("------------------------")
-
     try:
         # Get authentication token
         token_info = get_token()
@@ -29,8 +24,11 @@ def search_songs(query, limit=5):
         results = sp.search(q=query, type="track", limit=limit)
 
         if not results["tracks"]["items"]:
-            print(f"No songs found matching '{query}'")
-            return []
+            return {
+                "success": False,
+                "message": f"No songs found matching '{query}'",
+                "tracks": [],
+            }
 
         # Extract relevant track information
         tracks = []
@@ -47,36 +45,15 @@ def search_songs(query, limit=5):
             }
             tracks.append(track_info)
 
-            # Print track information
-            print(f"\n{i+1}. {track_info['name']} by {track_info['artist']}")
-            print(f"   Album: {track_info['album']}")
-            print(
-                f"   Duration: {track_info['duration_ms'] // 60000}:{(track_info['duration_ms'] % 60000) // 1000:02d}"
-            )
-            print(f"   Popularity: {track_info['popularity']}/100")
-            print(f"   Song ID: {track_info['id']}")
-            print(f"   URI: {track_info['uri']}")
-            print(f"   To play this song: python play.py {track_info['id']}")
-
-        return tracks
+        return {
+            "success": True,
+            "message": f"Found {len(tracks)} tracks matching '{query}'",
+            "tracks": tracks,
+        }
 
     except Exception as e:
-        print(f"Error: {e}")
-        return []
-
-
-def main():
-    """Main function to handle command line arguments"""
-    if len(sys.argv) < 2:
-        print("Please provide a search query")
-        print("Usage: python search.py 'search query' [limit]")
-        return
-
-    query = sys.argv[1]
-    limit = int(sys.argv[2]) if len(sys.argv) > 2 else 5
-
-    search_songs(query, limit)
-
-
-if __name__ == "__main__":
-    main()
+        return {
+            "success": False,
+            "message": f"Error searching for songs: {str(e)}",
+            "tracks": [],
+        }
