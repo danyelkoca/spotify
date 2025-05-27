@@ -2,17 +2,19 @@ from auth import get_token
 import spotipy
 
 
-def search_songs(query, limit=5):
+def search_songs(query, limit=10):
     """
     Search for songs on Spotify and return detailed information including song IDs
 
     Args:
         query (str): Search query for songs
-        limit (int): Maximum number of results to return
+        limit (int): Maximum number of results to return (default: 10, max: 50)
 
     Returns:
         list: List of songs with their details
     """
+    # Cap limit at 50 (Spotify API maximum)
+    limit = min(int(limit), 50)
     try:
         # Get authentication token
         token_info = get_token()

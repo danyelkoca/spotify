@@ -2,6 +2,40 @@ TOOL_SCHEMAS = [
     {
         "type": "function",
         "function": {
+            "name": "play_song_by_name",
+            "description": "Search for a song by name and play the top result",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "song_name": {
+                        "type": "string",
+                        "description": "Name of the song to search for and play",
+                    }
+                },
+                "required": ["song_name"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": "Search the web for current information about music, artists, festivals, or any other topic",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The search query",
+                    }
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "search_songs",
             "description": "Search for songs on Spotify by name, artist, or other keywords",
             "parameters": {
@@ -13,7 +47,10 @@ TOOL_SCHEMAS = [
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of results to return",
+                        "description": "Maximum number of results to return (default: 10, max: 50)",
+                        "default": 10,
+                        "minimum": 1,
+                        "maximum": 50,
                     },
                 },
                 "required": ["query"],
@@ -23,20 +60,18 @@ TOOL_SCHEMAS = [
     {
         "type": "function",
         "function": {
-            "name": "get_top_songs",
-            "description": "Get the user's top tracks from Spotify",
+            "name": "get_songs",
+            "description": "Get user's complete music collection including liked songs and all-time top tracks. Results are cached for faster access.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "time_range": {
-                        "type": "string",
-                        "enum": ["short_term", "medium_term", "long_term"],
-                        "description": "Time range for top tracks: short_term (4 weeks), medium_term (6 months), or long_term (years)",
-                    },
                     "limit": {
                         "type": "integer",
-                        "description": "Number of tracks to return",
-                    },
+                        "description": "Maximum number of songs to return per category (default: 50, max: 50)",
+                        "default": 50,
+                        "minimum": 1,
+                        "maximum": 50,
+                    }
                 },
             },
         },
