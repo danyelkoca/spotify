@@ -4,7 +4,7 @@ import os
 from typing import Dict, Any, List
 from serpapi import GoogleSearch
 from dotenv import load_dotenv
-from logger import log_execution, SpotifyLogger
+from core.logger import log_execution, SpotifyLogger
 
 logger = SpotifyLogger.get_logger()
 load_dotenv()

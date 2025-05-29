@@ -1,6 +1,6 @@
 import spotipy
 import time
-from logger import SpotifyLogger, log_execution
+from core.logger import SpotifyLogger, log_execution
 
 logger = SpotifyLogger.get_logger()
 

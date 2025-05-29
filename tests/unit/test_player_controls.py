@@ -1,6 +1,6 @@
 import spotipy
-from auth import get_token
-from logger import SpotifyLogger
+from core.auth import get_token
+from core.logger import SpotifyLogger
 from tools.utils import get_best_device
 from tools.player_controls import player_controls
 from tools.play_song import play_song, get_track_info

@@ -1,8 +1,8 @@
-from auth import get_token
+from core.auth import get_token
 import spotipy
 import time
-from logger import log_execution, SpotifyLogger
-from tools.utils import get_best_device, ensure_playback
+from core.logger import log_execution, SpotifyLogger
+from function_tools.utils import get_best_device, ensure_playback
 
 logger = SpotifyLogger.get_logger()
 

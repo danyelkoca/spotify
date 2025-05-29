@@ -1,1 +1,0 @@
-"""Spotify Voice Assistant package."""

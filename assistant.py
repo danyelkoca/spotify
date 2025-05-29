@@ -4,15 +4,15 @@ import argparse
 import logging
 from openai import OpenAI
 from dotenv import load_dotenv
-from logger import log_execution, SpotifyLogger
+from core.logger import log_execution, SpotifyLogger
 
 # Import function schemas and tools
-from function_schemas import TOOL_SCHEMAS
-from tools.search_songs import search_songs
-from tools.play_song import play_song
-from tools.player_controls import player_controls
-from tools.get_songs import get_songs
-from tools.web_search import web_search
+from schemas.function_schemas import TOOL_SCHEMAS
+from function_tools.search_songs import search_songs
+from function_tools.play_song import play_song
+from function_tools.player_controls import player_controls
+from function_tools.get_songs import get_songs
+from function_tools.web_search import web_search
 
 
 def parse_args():

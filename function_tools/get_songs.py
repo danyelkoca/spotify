@@ -1,7 +1,7 @@
 from typing import Dict, List, Any
-from auth import get_token
+from core.auth import get_token
 import spotipy
-from logger import log_execution, SpotifyLogger
+from core.logger import log_execution, SpotifyLogger
 
 logger = SpotifyLogger.get_logger()
 

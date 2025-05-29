@@ -1,6 +1,6 @@
 import time
 from tools.get_songs import get_songs, SongCache
-from logger import SpotifyLogger
+from core.logger import SpotifyLogger
 
 logger = SpotifyLogger.get_logger()
 
