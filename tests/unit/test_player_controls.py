@@ -2,8 +2,8 @@ import spotipy
 from core.auth import get_token
 from core.logger import SpotifyLogger
 from core.utils import get_best_device
-from core.player_controls import player_controls
-from core.play_song import play_song, get_track_info
+from function_tools.player_controls import player_controls
+from function_tools.play_song import play_song, get_track_info
 import time
 
 logger = SpotifyLogger.get_logger()

@@ -4,9 +4,9 @@ import sys
 from core.auth import get_token
 from core.logger import SpotifyLogger
 from core.utils import get_best_device, ensure_playback
-from core.player_controls import player_controls
-from core.play_song import play_song
-from core.search_songs import search_songs
+from function_tools.player_controls import player_controls
+from function_tools.play_song import play_song
+from function_tools.search_songs import search_songs
 
 logger = SpotifyLogger.get_logger()
 
