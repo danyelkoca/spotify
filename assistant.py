@@ -17,7 +17,7 @@ from function_tools.web_search import web_search
 
 def parse_args():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description="Spotify Voice Assistant")
+    parser = argparse.ArgumentParser(description="Spotify Assistant")
     parser.add_argument(
         "--log-level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -39,7 +39,7 @@ client = OpenAI()
 
 @log_execution
 def handle_conversation():
-    """Main conversation loop for Spotify Voice Assistant"""
+    """Main conversation loop for Spotify Assistant"""
     messages = [
         {
             "role": "system",
@@ -87,7 +87,7 @@ def handle_conversation():
         print("\n⚠️ Warning: SERPAPI_KEY not set in .env file")
         print("Web search functionality will not work.\n")
 
-    print("\n✨ Spotify Voice Assistant ✨")
+    print("\n✨ Spotify Assistant ✨")
     print("--------------------------------------------")
     print("Ask me anything about Spotify or to play music!")
     print("(Type 'exit' to quit)\n")
@@ -346,5 +346,5 @@ if __name__ == "__main__":
         print("OPENAI_API_KEY=your_api_key_here")
         exit(1)
 
-    logger.info("Starting Spotify Voice Assistant")
+    logger.info("Starting Spotify Assistant")
     handle_conversation()

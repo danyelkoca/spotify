@@ -1,10 +1,10 @@
-# Spotify Voice Assistant
+# Spotify Assistant
 
-A voice-controlled Spotify assistant that lets you manage your music, search for songs, and get information about artists and events using natural language.
+Spotify assistant that lets you manage your music, search for songs, and get information about artists and events using natural language.
 
 ## Features
 
-- Voice control for Spotify playback (play, pause, skip, etc.)
+- Control for Spotify playback (play, pause, skip, etc.)
 - Natural language music search and discovery
 - Smart caching for faster performance
 - Real-time artist and event information

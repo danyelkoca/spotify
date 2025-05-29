@@ -24,7 +24,7 @@ def test_integrated_flow():
     to ensure everything works together properly.
     """
     try:
-        print_header("SPOTIFY VOICE ASSISTANT INTEGRATION TEST")
+        print_header("SPOTIFY ASSISTANT INTEGRATION TEST")
 
         # Get auth token
         token_info = get_token()
