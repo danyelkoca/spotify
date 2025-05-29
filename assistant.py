@@ -9,7 +9,6 @@ from function_schemas import TOOL_SCHEMAS
 # Import our tools
 from tools.search_songs import search_songs
 from tools.play_song import play_song
-from tools.play_song_by_name import play_song_by_name
 from tools.player_controls import player_controls
 from tools.get_songs import get_songs
 from tools.web_search import web_search
@@ -29,11 +28,10 @@ def handle_conversation():
             "content": (
                 "You are a helpful Spotify assistant. You can search for songs, play music, control playback, access liked songs, and search the web. "
                 "Keep responses extremely brief (1-2 short sentences max). Use a casual, friendly tone. "
-                "When user wants to play a song, use play_song_by_name and pass the full song name with artist (e.g., 'Song Title by Artist Name'). "
-                "For exact song matches, always include both song title and artist name in the format 'Title by Artist'. "
-                "When searching without playing, just list artist and song names. "
+                "To play a song: first search for it with search_songs, then use play_song with the track ID. "
+                "When searching, list artist and song names in results. "
                 "When user asks about favorite songs, liked songs, top songs, or music collection - use get_songs. "
-                "For questions about current music events, festivals, or artists - use web_search to get current information, then use search_songs or play_song based on the results. "
+                "For questions about current music events, festivals, or artists - use web_search to get current information, then use search_songs if needed. "
                 "Avoid unnecessary explanations, greetings, or verbose descriptions."
             ),
         }
@@ -110,10 +108,6 @@ def handle_conversation():
                     elif function_name == "play_song":
                         print(f"\n▶️ Playing music...")
                         result = play_song(**arguments)
-                    elif function_name == "play_song_by_name":
-                        song_name = arguments.get("song_name")
-                        print(f"\n🎵 Finding and playing '{song_name}'...")
-                        result = play_song_by_name(**arguments)
                     elif function_name == "player_controls":
                         action = arguments.get("action")
                         print(f"\n⏯️ Controlling playback...")

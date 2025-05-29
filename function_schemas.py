@@ -2,23 +2,6 @@ TOOL_SCHEMAS = [
     {
         "type": "function",
         "function": {
-            "name": "play_song_by_name",
-            "description": "Search for a song by name and play the top result",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "song_name": {
-                        "type": "string",
-                        "description": "Name of the song to search for and play",
-                    }
-                },
-                "required": ["song_name"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
             "name": "web_search",
             "description": "Search the web for current information about music, artists, festivals, or any other topic",
             "parameters": {
