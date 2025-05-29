@@ -1,15 +1,15 @@
 from typing import Dict, List, Any
 from auth import get_token
 import spotipy
+from logger import log_execution, SpotifyLogger
+
+logger = SpotifyLogger.get_logger()
 
 
 class SongCache:
     _instance = None
     _cache: Dict[str, List[Dict[str, Any]]] = {
         "liked": None,
-        "top_short": None,
-        "top_medium": None,
-        "top_long": None,
     }
 
     def __new__(cls):
@@ -18,196 +18,144 @@ class SongCache:
         return cls._instance
 
     @classmethod
-    def get_cached_songs(cls, category: str) -> List[Dict[str, Any]]:
-        """Get songs from cache for a given category"""
-        return cls._cache.get(category)
+    def get_cached_songs(cls) -> List[Dict[str, Any]]:
+        """Get liked songs from cache"""
+        return cls._cache["liked"]
 
     @classmethod
-    def set_cached_songs(cls, category: str, songs: List[Dict[str, Any]]) -> None:
-        """Cache songs for a given category"""
-        cls._cache[category] = songs
+    def set_cached_songs(cls, songs: List[Dict[str, Any]]) -> None:
+        """Cache liked songs"""
+        cls._cache["liked"] = songs
 
     @classmethod
     def clear_cache(cls) -> None:
-        """Clear all cached songs"""
-        cls._cache = {
-            "liked": None,
-            "top_short": None,
-            "top_medium": None,
-            "top_long": None,
-        }
-
-    @classmethod
-    def clear_category_cache(cls, category: str) -> None:
-        """Clear cache for a specific category"""
-        if category in cls._cache:
-            cls._cache[category] = None
+        """Clear cached songs"""
+        cls._cache["liked"] = None
 
 
-def _fetch_liked_songs(sp: spotipy.Spotify, limit: int = 50) -> List[Dict[str, Any]]:
-    """Helper to fetch liked/saved tracks with memory-efficient pagination"""
+@log_execution
+def _fetch_songs(sp: spotipy.Spotify, limit: int = 50) -> List[Dict[str, Any]]:
+    """
+    Fetch user's saved tracks from Spotify
+
+    Args:
+        sp: Spotify client
+        limit: Maximum number of songs to fetch (default: 50)
+
+    Returns:
+        List of song dictionaries with essential fields
+    """
     try:
-        liked_songs = []
+        songs = []
         offset = 0
-        batch_size = min(20, limit)  # Smaller batch size for better memory usage
+        batch_size = min(50, limit)  # Use Spotify's max limit of 50
 
-        # Get total count first with a minimal request
-        initial_results = sp.current_user_saved_tracks(limit=1)
+        # Get total count first
+        logger.debug("Getting initial saved tracks count")
+        initial_results = sp.current_user_saved_tracks(limit=1, market="US")
         total = min(initial_results["total"], limit)
+        logger.info(f"Found {total} saved tracks to fetch")
 
         while offset < total:
-            results = sp.current_user_saved_tracks(limit=batch_size, offset=offset)
+            logger.debug(f"Fetching tracks batch from offset {offset}")
+            results = sp.current_user_saved_tracks(
+                limit=batch_size, offset=offset, market="US"
+            )
+
             if not results["items"]:
                 break
 
-            # Process songs in batches
+            # Process tracks - only include essential fields
             batch_songs = [
                 {
                     "name": item["track"]["name"],
                     "artist": item["track"]["artists"][0]["name"],
                     "id": item["track"]["id"],
-                    "uri": item["track"]["uri"],
-                    "album": item["track"]["album"]["name"],
-                    "popularity": item["track"]["popularity"],
-                    "duration_ms": item["track"]["duration_ms"],
-                    "url": item["track"]["external_urls"]["spotify"],
-                    "added_at": item["added_at"],
-                    "source": "liked",
                 }
                 for item in results["items"]
             ]
 
-            liked_songs.extend(batch_songs)
+            songs.extend(batch_songs)
             offset += len(batch_songs)
+            logger.debug(
+                f"Fetched {len(batch_songs)} tracks, total so far: {len(songs)}"
+            )
 
-            # Break early if we've reached the limit
-            if len(liked_songs) >= limit:
-                liked_songs = liked_songs[:limit]
+            if len(songs) >= limit:
+                songs = songs[:limit]
                 break
 
-        return liked_songs
+        logger.info(f"Successfully fetched {len(songs)} saved tracks")
+        return songs
+
     except Exception as e:
-        print(f"Error fetching liked songs: {str(e)}")
+        logger.error(f"Error fetching saved tracks: {str(e)}", exc_info=True)
         return []
 
 
-def _fetch_top_songs(
-    sp: spotipy.Spotify, time_range: str, limit: int = 50
-) -> List[Dict[str, Any]]:
-    """Helper to fetch top tracks for a specific time range"""
-    try:
-        batch_size = min(20, limit)  # Smaller batch size for better memory usage
-        results = sp.current_user_top_tracks(time_range=time_range, limit=batch_size)
-
-        if not results["items"]:
-            return []
-
-        return [
-            {
-                "name": track["name"],
-                "artist": track["artists"][0]["name"],
-                "id": track["id"],
-                "uri": track["uri"],
-                "album": track["album"]["name"],
-                "popularity": track["popularity"],
-                "duration_ms": track["duration_ms"],
-                "url": track["external_urls"]["spotify"],
-                "source": f"top_{time_range}",
-            }
-            for track in results["items"][:limit]
-        ]
-    except Exception as e:
-        print(f"Error fetching top songs: {str(e)}")
-        return []
-
-
+@log_execution
 def get_songs(limit: int = 50) -> Dict[str, Any]:
     """
-    Get user's complete music collection including liked songs and top tracks from all time periods.
+    Get user's saved tracks (liked songs) from Spotify.
     Results are cached for faster subsequent access.
 
     Args:
-        limit (int): Maximum number of songs to return per category (default: 50, max: 50)
+        limit: Maximum number of songs to return (default: 50)
 
     Returns:
-        dict: Dictionary containing:
-            - success (bool): Operation success status
-            - message (str): Status message
-            - tracks (List[Dict]): Combined unique tracks from all sources
-            - total (int): Total number of unique tracks
-            - sources (List[str]): List of sources that contributed tracks
+        Dictionary containing:
+        - success (bool): Operation success status
+        - message (str): Status message
+        - tracks (List[Dict]): List of tracks
+        - total (int): Total number of tracks
     """
     try:
         cache = SongCache()
-        seen_ids = set()  # Track IDs we've seen to avoid duplicates
-        unique_songs = []  # Store unique songs
-        sources = set()  # Use set for sources to avoid duplicates efficiently
 
-        # Get authentication token
-        token_info = get_token()
-        sp = spotipy.Spotify(auth=token_info["access_token"])
+        # Check cache first
+        logger.debug("Checking cache for saved tracks")
+        songs = cache.get_cached_songs()
 
-        # Helper function to process songs efficiently
-        def process_songs(songs, source):
+        if songs is None:
+            logger.info("Cache miss, fetching from Spotify API")
+            # Get authentication token
+            token_info = get_token()
+            sp = spotipy.Spotify(auth=token_info["access_token"])
+
+            # Fetch songs from Spotify
+            songs = _fetch_songs(sp, limit)
+
             if songs:
-                sources.add(source)
-                for song in songs:
-                    if song["id"] not in seen_ids:
-                        seen_ids.add(song["id"])
-                        unique_songs.append(song)
-
-        # Get liked songs (from cache or API)
-        liked_songs = cache.get_cached_songs("liked")
-        if liked_songs is None:
-            liked_songs = _fetch_liked_songs(sp, limit)
-            if liked_songs:
-                cache.set_cached_songs("liked", liked_songs)
+                logger.debug("Caching fetched tracks")
+                cache.set_cached_songs(songs)
             else:
-                cache.clear_category_cache("liked")
-        process_songs(liked_songs, "liked")
+                logger.warning("No tracks fetched, clearing cache")
+                cache.clear_cache()
+        else:
+            logger.info(f"Cache hit, found {len(songs)} tracks")
 
-        # Get top songs from different time periods
-        time_ranges = [
-            ("top_short", "short_term"),
-            ("top_medium", "medium_term"),
-            ("top_long", "long_term"),
-        ]
-
-        for cache_key, time_range in time_ranges:
-            top_songs = cache.get_cached_songs(cache_key)
-            if top_songs is None:
-                top_songs = _fetch_top_songs(sp, time_range, limit)
-                if top_songs:
-                    cache.set_cached_songs(cache_key, top_songs)
-            process_songs(top_songs, f"top_{time_range}")
-
-        if not unique_songs:
+        if not songs:
             return {
                 "success": False,
-                "message": "No songs found in any category. Please try again.",
+                "message": "No saved tracks found. Try saving some songs on Spotify!",
                 "tracks": [],
                 "total": 0,
-                "sources": [],
             }
 
         return {
             "success": True,
-            "message": f"Found {len(unique_songs)} unique songs from sources: {', '.join(sorted(sources))}",
-            "tracks": unique_songs,
-            "total": len(unique_songs),
-            "sources": sorted(list(sources)),
+            "message": f"Found {len(songs)} saved tracks",
+            "tracks": songs,
+            "total": len(songs),
         }
 
     except Exception as e:
-        # Clear liked songs cache on error to force refresh next time
-        cache = SongCache()
-        cache.clear_category_cache("liked")
-        print(f"Error in get_songs: {str(e)}")  # Add error logging
+        logger.error(f"Error in get_songs: {str(e)}", exc_info=True)
+        cache.clear_cache()
 
         return {
             "success": False,
-            "message": f"Error fetching music collection: {str(e)}",
+            "message": f"Error fetching saved tracks: {str(e)}",
             "tracks": [],
             "total": 0,
-            "sources": [],
         }

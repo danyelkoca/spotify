@@ -30,8 +30,8 @@ TOOL_SCHEMAS = [
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of results to return (default: 10, max: 50)",
-                        "default": 10,
+                        "description": "Maximum number of results to return (default: 1 for specific songs, increase for browsing/discovery)",
+                        "default": 1,
                         "minimum": 1,
                         "maximum": 50,
                     },
@@ -44,13 +44,13 @@ TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "get_songs",
-            "description": "Get user's complete music collection including liked songs and all-time top tracks. Results are cached for faster access.",
+            "description": "Get user's saved tracks (liked songs) from Spotify. Results are cached for faster access.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of songs to return per category (default: 50, max: 50)",
+                        "description": "Maximum number of songs to return (default: 50, max: 50)",
                         "default": 50,
                         "minimum": 1,
                         "maximum": 50,
@@ -63,13 +63,13 @@ TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "play_song",
-            "description": "Play a specific song by ID or URI",
+            "description": "Play a specific song by ID",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "track_id": {
                         "type": "string",
-                        "description": "Spotify track ID or URI",
+                        "description": "Spotify track ID",
                     }
                 },
                 "required": ["track_id"],
@@ -97,6 +97,17 @@ TOOL_SCHEMAS = [
                     }
                 },
                 "required": ["action"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_devices",
+            "description": "List all available Spotify devices that can be used for playback",
+            "parameters": {
+                "type": "object",
+                "properties": {},
             },
         },
     },
