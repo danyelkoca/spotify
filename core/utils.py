@@ -114,10 +114,6 @@ def ensure_playback(sp: spotipy.Spotify, track_id=None):
 
         # Strategy 2: Use provided track ID if available
         if track_id:
-            # Extract ID from URI if needed
-            if track_id.startswith("spotify:track:"):
-                track_id = track_id.split(":")[-1]
-
             logger.info(f"Playing specified track {track_id}")
             sp.start_playback(device_id=device_id, uris=[f"spotify:track:{track_id}"])
             time.sleep(1)

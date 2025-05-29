@@ -24,48 +24,6 @@ def web_search(query: str) -> Dict[str, Any]:
     logger = SpotifyLogger.get_logger()
     logger.debug(f"Entering web_search with query={query}")
 
-    # Mock data for Fuji Rock Festival search
-    if "fuji rock" in query.lower():
-        logger.info("Fuji Rock Festival query detected, returning mock data")
-        mock_results = [
-            {
-                "title": "FRF'25 LINE-UP INCLUDING PERFORMANCE DATES!",
-                "snippet": "FOUR TET, a one-of-a-kind presence in the electronic music scene that has captivated artists such as Aphex Twin and Radiohead, and Tatsuro ...",
-                "link": "https://en.fujirockfestival.com/news/0221f/",
-                "source": "Google Search",
-            },
-            {
-                "title": "FUJI ROCK FESTIVAL 2025 Lineup: Fred again.., Vulfpeck, ...",
-                "snippet": "Japan's FUJI ROCK FESTIVAL '25 Returning to Naeba With Fred again.., Vulfpeck, Vampire Weekend as Headliners. Dates are set for Friday, July 25 ...",
-                "link": "https://www.billboard.com/music/music-news/fuji-rock-festival-2025-lineup-fred-again-vampire-weekend-1235983098/",
-                "source": "Google Search",
-            },
-            {
-                "title": "Fuji Rock Expands Lineup with LITTLE SIMZ, Jane ...",
-                "snippet": "Fuji Rock Expands Lineup with LITTLE SIMZ, Jane Remover, and US in Latest Announcement · FUJI ROCK FESTIVAL '25 · Dates: July 25 (Fri), 26 (Sat), ...",
-                "link": "https://niewmedia.com/en/news/072546/",
-                "source": "Google Search",
-            },
-            {
-                "title": "r/fujirock - 2025 Lineup",
-                "snippet": "All in all, I am happy with a lot of these choices: Vampire Weekend, Four Tet, James Blake, Vulfpeck, Ezra Collective, Radwimps, etc.",
-                "link": "https://www.reddit.com/r/fujirock/comments/1iugwh9/2025_lineup/",
-                "source": "Google Search",
-            },
-            {
-                "title": "LINE UP UPDATE! 6 new artists added to line up!",
-                "snippet": 'PERFUME GENIUS, ROBERT RANDOLPH and more! Six new artists added to line up! PERFUME GENIUS, who released their latest album "Glory" last ...',
-                "link": "https://en.fujirockfestival.com/news/0425c/",
-                "source": "Google Search",
-            },
-        ]
-        logger.info(f"Returning mock results for query: {query}")
-        return {
-            "success": True,
-            "message": "Search completed successfully",
-            "results": mock_results,
-        }
-
     try:
         # Get API key from environment variables
         logger.debug("Getting API key from environment variables")

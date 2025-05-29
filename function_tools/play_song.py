@@ -2,7 +2,7 @@ import webbrowser
 from core.auth import get_token
 import spotipy
 from core.logger import log_execution, SpotifyLogger
-from function_tools.utils import get_best_device
+from core.utils import get_best_device
 
 logger = SpotifyLogger.get_logger()
 
@@ -20,10 +20,6 @@ def get_track_info(sp, track_id=None):
         dict: Track information or None if not found
     """
     try:
-        # Extract ID from URI if someone passes a URI
-        if track_id and track_id.startswith("spotify:track:"):
-            track_id = track_id.split(":")[-1]
-
         logger.debug(f"Fetching track info for ID: {track_id}")
         track = sp.track(track_id)
         track_info = {
@@ -60,10 +56,6 @@ def play_song(track_id):
 
         # Create a Spotify client
         sp = spotipy.Spotify(auth=token_info["access_token"])
-
-        # Extract ID from URI if someone passes a URI
-        if track_id and track_id.startswith("spotify:track:"):
-            track_id = track_id.split(":")[-1]
 
         # Get track information
         logger.debug(f"Getting track information for ID: {track_id}")

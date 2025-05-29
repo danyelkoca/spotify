@@ -1,7 +1,7 @@
 import spotipy
 from core.auth import get_token
 from core.logger import SpotifyLogger
-from tools.utils import get_best_device
+from core.utils import get_best_device
 
 logger = SpotifyLogger.get_logger()
 

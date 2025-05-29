@@ -2,7 +2,7 @@ from core.auth import get_token
 import spotipy
 import time
 from core.logger import log_execution, SpotifyLogger
-from function_tools.utils import get_best_device, ensure_playback
+from core.utils import get_best_device, ensure_playback
 
 logger = SpotifyLogger.get_logger()
 

@@ -69,7 +69,7 @@ TOOL_SCHEMAS = [
                 "properties": {
                     "track_id": {
                         "type": "string",
-                        "description": "Spotify track ID",
+                        "description": "The Spotify track ID (not URI). For example: '4cOdK2wGLETKBW3PvgPWqT'",
                     }
                 },
                 "required": ["track_id"],
