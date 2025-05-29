@@ -12,7 +12,14 @@ A voice-controlled Spotify assistant that lets you manage your music, search for
 
 ## Quick Setup
 
-1. **Install Python Requirements**:
+1. **Clone the Repository**:
+
+```bash
+git clone https://github.com/danyelkoca/spotify.git
+cd spotify
+```
+
+2. **Install Python Requirements**:
 
 ```bash
 python3 -m venv venv
@@ -20,7 +27,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-2. **Set Up API Keys**:
+3. **Set Up API Keys**:
 
 Create a `.env` file in the project root with:
 
@@ -37,7 +44,7 @@ OPENAI_API_KEY=your_openai_key
 SERPAPI_KEY=your_serpapi_key
 ```
 
-3. **Run the Assistant**:
+4. **Run the Assistant**:
 
 ```bash
 python assistant.py
@@ -61,19 +68,23 @@ spotify/
 │   ├── play_song.py      # Music playback
 │   ├── player_controls.py # Playback controls
 │   ├── search_songs.py   # Music search
-│   ├── utils.py          # Function utilities
 │   └── web_search.py     # Web search integration
 ├── logs/                 # Application logs
+│   └── spotify.log       # Runtime logs
 ├── schemas/              # API schemas
 │   └── function_schemas.py# OpenAI function definitions
 ├── tests/                # Test suites
 │   ├── integration/      # Integration tests
+│   │   └── test_integrated.py # Integration test cases
 │   └── unit/            # Unit tests
+│       ├── test_caching.py    # Cache system tests
+│       ├── test_device_selection.py # Device management tests
+│       └── test_player_controls.py  # Playback control tests
 ├── .env                  # Environment configuration
 ├── .gitignore           # Git ignore rules
+├── .spotify_token_cache  # Spotify authentication cache
 ├── assistant.py         # Main assistant application
-├── requirements.txt     # Python dependencies
-└── setup.py            # Package configuration
+└── requirements.txt     # Python dependencies
 ```
 
 ## Getting API Keys
